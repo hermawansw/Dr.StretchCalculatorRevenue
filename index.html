@@ -1,79 +1,95 @@
-​<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard Revenue Doctor Stretch</title>
-<script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
-<style>
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: #fff; margin: 0; padding: 20px; }
-.container { max-width: 900px; margin: auto; background: #16213e; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-h1 { color: #4facfe; text-align: center; }
-.upload-section { margin-bottom: 30px; text-align: center; }
-input[type=file] { padding: 10px; background: #0f3460; border-radius: 5px; color: #fff; }
-.result-card { background: #0f3460; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; }
-.amount { font-size: 24px; font-weight: bold; color: #00b4d8; }
-canvas { margin-top: 30px; background: #fff; padding: 15px; border-radius: 8px; }
-</style>
+    <meta charset="UTF-8">
+    <title>Dashboard Revenue Doctor Stretch</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #005691; padding-bottom: 20px; }
+        .logo { max-width: 200px; height: auto; }
+        h1 { color: #005691; margin-top: 15px; }
+        .upload-section { margin-bottom: 30px; text-align: center; background: #e9ecef; padding: 20px; border-radius: 8px; }
+        input[type=file] { padding: 10px; background: #005691; border: none; border-radius: 5px; color: #fff; cursor: pointer; }
+        .result-card { background: #005691; color: #fff; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; }
+        .result-card h3 { margin: 0 0 10px 0; font-size: 1.1em; }
+        .amount { font-size: 28px; font-weight: bold; color: #ffd166; }
+        canvas { margin-top: 30px; background: #f9f9f9; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    </style>
 </head>
 <body>
-<div class="container">
-<h1>Dashboard Revenue</h1>
-<div class="upload-section">
-<label for="csvFile">Unggah File Laporan (CSV): </label>
-<input type="file" id="csvFile" accept=".csv">
-</div>
-<div id="results" style="display:none;">
-<div class="result-card">
-<h3>Total Revenue: <span id="totalRevenue" class="amount">Rp 0</span></h3>
-</div>
-<div class="result-card">
-<h3>Total Insentif Bersih: <span id="totalIncentive" class="amount">Rp 0</span></h3>
-</div>
-</div>
-<canvas id="historyChart"></canvas>
-</div>
-​<script>
-document.getElementById('csvFile').addEventListener('change', function(e) {
-const file = e.target.files[0];
-const reader = new FileReader();
-reader.onload = function(e) {
-const text = e.target.result;
-processData(text);
-};
-reader.readAsText(file);
-});
-​function processData(text) {
-const rows = text.split('\n');
-let totalRev = 0;
-// Contoh sederhana mengambil angka dari kolom pertama
-for(let i=1; i<rows.length; i++) {
-if(rows[i].trim() !== '') {
-totalRev += parseFloat(rows[i].split(',')[0]);
-}
-}
-​// Perhitungan Insentif
-let step1 = totalRev - 18000000;
-let step2 = step1 * 1.1;
-let incentive = step2 * 0.30;
-​document.getElementById('totalRevenue').innerText = 'Rp ' + totalRev.toLocaleString('id-ID');
-document.getElementById('totalIncentive').innerText = 'Rp ' + incentive.toLocaleString('id-ID');
-document.getElementById('results').style.display = 'block';
-​updateChart();
-}
-​function updateChart() {
-const ctx = document.getElementById('historyChart').getContext('2d');
-new Chart(ctx, {
-type: 'bar',
-data: {
-labels: ['Bulan 1', 'Bulan 2', 'Bulan 3'],
-datasets: [{
-label: 'Insentif (Rp)',
-data: [5000000, 7500000, 6000000],
-backgroundColor: '#4facfe',
-}]
-}
-});
-}
-</script>
+    <div class="container">
+        <div class="header">
+            <!-- Ganti URL berikut dengan link gambar logo Doctor Stretch from Japan -->
+            <img src="URL_LOGO_KAMU_DI_SINI" alt="Doctor Stretch from Japan" class="logo">
+            <h1>Dashboard Revenue & Insentif</h1>
+        </div>
+        
+        <div class="upload-section">
+            <label for="csvFile">Unggah File Laporan (CSV): </label>
+            <input type="file" id="csvFile" accept=".csv">
+        </div>
+        <div id="results" style="display:none;">
+            <div class="result-card">
+                <h3>Total Revenue</h3>
+                <span id="totalRevenue" class="amount">Rp 0</span>
+            </div>
+            <div class="result-card">
+                <h3>Total Insentif Bersih</h3>
+                <span id="totalIncentive" class="amount">Rp 0</span>
+            </div>
+        </div>
+        <canvas id="historyChart"></canvas>
+    </div>
+    
+    <script>
+        document.getElementById('csvFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                processData(text);
+            };
+            reader.readAsText(file);
+        });
+
+        function processData(text) {
+            const rows = text.split('\n');
+            let totalRev = 0;
+            for(let i=1; i<rows.length; i++) {
+                if(rows[i].trim() !== '') {
+                    totalRev += parseFloat(rows[i].split(',')[0]);
+                }
+            }
+            
+            let step1 = totalRev - 18000000;
+            let step2 = step1 * 1.1;
+            let incentive = step2 * 0.30;
+            
+            document.getElementById('totalRevenue').innerText = 'Rp ' + totalRev.toLocaleString('id-ID');
+            document.getElementById('totalIncentive').innerText = 'Rp ' + incentive.toLocaleString('id-ID');
+            document.getElementById('results').style.display = 'block';
+            
+            updateChart();
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Bulan 1', 'Bulan 2', 'Bulan 3'],
+                    datasets: [{
+                        label: 'Insentif (Rp)',
+                        data: [5000000, 7500000, 6000000],
+                        backgroundColor: '#005691',
+                        borderColor: '#003366',
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+    </script>
 </body>
 </html>
