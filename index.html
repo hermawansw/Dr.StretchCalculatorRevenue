@@ -1,0 +1,79 @@
+​<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Revenue Doctor Stretch</title>
+<script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: #fff; margin: 0; padding: 20px; }
+.container { max-width: 900px; margin: auto; background: #16213e; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+h1 { color: #4facfe; text-align: center; }
+.upload-section { margin-bottom: 30px; text-align: center; }
+input[type=file] { padding: 10px; background: #0f3460; border-radius: 5px; color: #fff; }
+.result-card { background: #0f3460; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; }
+.amount { font-size: 24px; font-weight: bold; color: #00b4d8; }
+canvas { margin-top: 30px; background: #fff; padding: 15px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Dashboard Revenue</h1>
+<div class="upload-section">
+<label for="csvFile">Unggah File Laporan (CSV): </label>
+<input type="file" id="csvFile" accept=".csv">
+</div>
+<div id="results" style="display:none;">
+<div class="result-card">
+<h3>Total Revenue: <span id="totalRevenue" class="amount">Rp 0</span></h3>
+</div>
+<div class="result-card">
+<h3>Total Insentif Bersih: <span id="totalIncentive" class="amount">Rp 0</span></h3>
+</div>
+</div>
+<canvas id="historyChart"></canvas>
+</div>
+​<script>
+document.getElementById('csvFile').addEventListener('change', function(e) {
+const file = e.target.files[0];
+const reader = new FileReader();
+reader.onload = function(e) {
+const text = e.target.result;
+processData(text);
+};
+reader.readAsText(file);
+});
+​function processData(text) {
+const rows = text.split('\n');
+let totalRev = 0;
+// Contoh sederhana mengambil angka dari kolom pertama
+for(let i=1; i<rows.length; i++) {
+if(rows[i].trim() !== '') {
+totalRev += parseFloat(rows[i].split(',')[0]);
+}
+}
+​// Perhitungan Insentif
+let step1 = totalRev - 18000000;
+let step2 = step1 * 1.1;
+let incentive = step2 * 0.30;
+​document.getElementById('totalRevenue').innerText = 'Rp ' + totalRev.toLocaleString('id-ID');
+document.getElementById('totalIncentive').innerText = 'Rp ' + incentive.toLocaleString('id-ID');
+document.getElementById('results').style.display = 'block';
+​updateChart();
+}
+​function updateChart() {
+const ctx = document.getElementById('historyChart').getContext('2d');
+new Chart(ctx, {
+type: 'bar',
+data: {
+labels: ['Bulan 1', 'Bulan 2', 'Bulan 3'],
+datasets: [{
+label: 'Insentif (Rp)',
+data: [5000000, 7500000, 6000000],
+backgroundColor: '#4facfe',
+}]
+}
+});
+}
+</script>
+</body>
+</html>
