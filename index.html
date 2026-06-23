@@ -24,6 +24,8 @@
             border-radius: 16px; 
             box-shadow: 0 8px 30px rgba(0,0,0,0.5); 
             flex: 1;
+            width: 100%;
+            box-sizing: border-box;
         }
         .header { 
             text-align: center; 
@@ -52,33 +54,42 @@
             font-size: 22px; 
             margin-top: 15px; 
         }
+
+        /* Area Drop Zone Baru yang Bisa Di-drag */
         .upload-section { 
             margin-bottom: 30px; 
             text-align: center; 
             background: #25254d; 
-            padding: 25px; 
+            padding: 40px 20px; 
             border-radius: 12px; 
-            border: 1px dashed #4e4eff;
+            border: 2px dashed #4e4eff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        /* Efek visual saat file diseret di atas kotak */
+        .upload-section.dragover {
+            background: #313166;
+            border-color: #00f2fe;
+            transform: scale(1.01);
         }
         .upload-section label {
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             color: #a5a5d4;
             font-weight: bold;
+            font-size: 16px;
+            pointer-events: none; /* Agar tidak mengganggu drop area */
+        }
+        .upload-hint {
+            font-size: 13px;
+            color: #8a8aa9;
+            margin-top: 8px;
+            pointer-events: none;
         }
         input[type=file] { 
-            padding: 10px 20px; 
-            background: #4e4eff; 
-            border: none; 
-            border-radius: 8px; 
-            color: #fff; 
-            cursor: pointer; 
-            font-weight: bold;
-            transition: 0.3s;
+            display: none; /* Sembunyikan tombol bawaan agar rapi */
         }
-        input[type=file]:hover {
-            background: #3939d1;
-        }
+
         #results {
             display: none;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -140,8 +151,9 @@
             <h1>Dashboard Revenue & Insentif</h1>
         </div>
         
-        <div class="upload-section">
-            <label for="csvFile">Silakan Unggah File Laporan (CSV) Anda</label>
+        <div class="upload-section" id="dropZone">
+            <label id="uploadLabel">Seret & Jatuhkan (Drag & Drop) File CSV di Sini</label>
+            <div class="upload-hint">Atau klik area ini untuk memilih file</div>
             <input type="file" id="csvFile" accept=".csv">
         </div>
 
@@ -167,23 +179,61 @@
     
     <script>
         let myChart = null;
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('csvFile');
+        const uploadLabel = document.getElementById('uploadLabel');
 
-        document.getElementById('csvFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
+        // Klik area dropzone untuk buka explorer file konvensional
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Efek visual saat file diseret masuk/keluar area kotak
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            }, false);
+        });
+
+        // Menangkap file yang dijatuhkan (Dropped)
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                fileInput.files = files;
+                handleFile(files[0]);
+            } else {
+                alert('Mohon jatuhkan file dengan format .CSV ya!');
+            }
+        });
+
+        // Menangkap file lewat jalur klik biasa
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            uploadLabel.innerText = "File Terbaca: " + file.name;
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
                 processData(text);
             };
             reader.readAsText(file);
-        });
+        }
 
         function processData(text) {
             const rows = text.split('\n');
             let totalRev = 0;
-            for(let i=1; i<rows.length; i++) {
+            for(let i=0; i<rows.length; i++) {
                 if(rows[i].trim() !== '') {
                     const value = parseFloat(rows[i].split(',')[0]);
                     if(!isNaN(value)) totalRev += value;
