@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Revenue Doctor Stretch</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.185/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -55,8 +60,6 @@
             font-size: 22px; 
             margin-top: 15px; 
         }
-
-        /* Area Drop Zone */
         .upload-section { 
             margin-bottom: 30px; 
             text-align: center; 
@@ -89,7 +92,6 @@
         input[type=file] { 
             display: none; 
         }
-
         #results {
             display: none;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -120,8 +122,6 @@
         }
         #totalRevenue { color: #00f2fe; }
         #totalIncentive { color: #ff9f43; }
-
-        /* SEKSI RATE CARD KREATOR - INSTAGRAM PROMOTION */
         .rate-card-container {
             margin: 30px 0;
             background: linear-gradient(135deg, #2b1055, #1c1c3a);
@@ -149,26 +149,11 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .profile-text h2 {
-            margin: 0;
-            font-size: 20px;
-            color: #ffffff;
-        }
-        .profile-text p {
-            margin: 2px 0 0 0;
-            font-size: 13px;
-            color: #ff4757;
-            font-weight: bold;
-        }
+        .profile-text h2 { margin: 0; font-size: 20px; color: #ffffff; }
+        .profile-text p { margin: 2px 0 0 0; font-size: 13px; color: #ff4757; font-weight: bold; }
         .badge-collaboration {
-            background: #ff4757;
-            color: #fff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            background: #ff4757; color: #fff; padding: 5px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
         }
         .rate-grid {
             display: grid;
@@ -176,77 +161,25 @@
             gap: 15px;
         }
         .rate-item {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.04); padding: 15px; border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s;
         }
-        .rate-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-            border-color: #00f2fe;
-        }
-        .rate-item i {
-            color: #00f2fe;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-        .rate-title {
-            font-size: 13px;
-            color: #a5a5d4;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-        .rate-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-        }
-        .rate-desc {
-            font-size: 11px;
-            color: #8a8aa9;
-            margin-top: 4px;
-        }
+        .rate-item:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-2px); border-color: #00f2fe; }
+        .rate-item i { color: #00f2fe; font-size: 18px; margin-bottom: 8px; }
+        .rate-title { font-size: 13px; color: #a5a5d4; margin-bottom: 4px; font-weight: 600; }
+        .rate-price { font-size: 18px; font-weight: bold; color: #fff; }
+        .rate-desc { font-size: 11px; color: #8a8aa9; margin-top: 4px; }
         .cta-btn {
-            display: block;
-            text-align: center;
-            background: linear-gradient(45deg, #feda75, #d62976, #962fbf);
-            color: white;
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(214, 41, 118, 0.3);
+            display: block; text-align: center; background: linear-gradient(45deg, #feda75, #d62976, #962fbf);
+            color: white; text-decoration: none; padding: 12px; border-radius: 8px; margin-top: 20px;
+            font-weight: bold; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 15px rgba(214, 41, 118, 0.3);
         }
-        .cta-btn:hover {
-            opacity: 0.95;
-            transform: scale(1.01);
-        }
-
         .chart-container {
-            background: #25254d; 
-            padding: 20px; 
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            margin-top: 20px;
+            background: #25254d; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-top: 20px;
         }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #25254d;
-            font-size: 14px;
-            color: #8a8aa9;
-        }
-        .footer a {
-            color: #00f2fe;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #25254d; font-size: 14px; color: #8a8aa9; }
+        .footer a { color: #00f2fe; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -260,9 +193,9 @@
         </div>
         
         <div class="upload-section" id="dropZone">
-            <label id="uploadLabel">Seret & Jatuhkan (Drag & Drop) File CSV di Sini</label>
-            <div class="upload-hint">Atau klik area ini untuk memilih file</div>
-            <input type="file" id="csvFile" accept=".csv">
+            <label id="uploadLabel">Pilih atau Jatuhkan File Laporan di Sini</label>
+            <div class="upload-hint">Mendukung Format Excel (.xlsx, .xls) dan PDF (.pdf)</div>
+            <input type="file" id="fileInput" accept=".xlsx, .xls, .pdf">
         </div>
 
         <div id="results">
@@ -287,37 +220,13 @@
                 </div>
                 <div class="badge-collaboration">Open for Collaboration</div>
             </div>
-            
             <div class="rate-grid">
-                <div class="rate-item">
-                    <i class="fas fa-camera"></i>
-                    <div class="rate-title">Instagram Feed / Post</div>
-                    <div class="rate-price">Rp 350.000</div>
-                    <div class="rate-desc">High quality photo post + premium caption slot.</div>
-                </div>
-                <div class="rate-item">
-                    <i class="fas fa-bolt"></i>
-                    <div class="rate-title">Instagram Story</div>
-                    <div class="rate-price">Rp 150.000</div>
-                    <div class="rate-desc">Active 24 Hours + Direct Link Swipe Up/Sticker.</div>
-                </div>
-                <div class="rate-item">
-                    <i class="fas fa-video"></i>
-                    <div class="rate-title">Instagram Reels</div>
-                    <div class="rate-price">Rp 600.000</div>
-                    <div class="rate-desc">Short dynamic video content, editing included.</div>
-                </div>
-                <div class="rate-item">
-                    <i class="fas fa-box-open"></i>
-                    <div class="rate-title">Bundling Package</div>
-                    <div class="rate-price">Rp 950.000</div>
-                    <div class="rate-desc">1 Reels + 1 Feed + 2 Stories (Save 15%).</div>
-                </div>
+                <div class="rate-item"><i class="fas fa-camera"></i><div class="rate-title">Instagram Feed</div><div class="rate-price">Rp 350.000</div></div>
+                <div class="rate-item"><i class="fas fa-bolt"></i><div class="rate-title">Instagram Story</div><div class="rate-price">Rp 150.000</div></div>
+                <div class="rate-item"><i class="fas fa-video"></i><div class="rate-title">Instagram Reels</div><div class="rate-price">Rp 600.000</div></div>
+                <div class="rate-item"><i class="fas fa-box-open"></i><div class="rate-title">Bundling Package</div><div class="rate-price">Rp 950.000</div></div>
             </div>
-            
-            <a href="https://instagram.com/hermawan_sw" target="_blank" class="cta-btn">
-                <i class="fab fa-instagram"></i> Hubungi via Instagram DM
-            </a>
+            <a href="https://instagram.com/hermawan_sw" target="_blank" class="cta-btn"><i class="fab fa-instagram"></i> Hubungi via Instagram DM</a>
         </div>
 
         <div class="chart-container">
@@ -325,108 +234,98 @@
         </div>
     </div>
 
-    <div class="footer">
-        Dibuat oleh <a href="https://instagram.com/hermawan_sw" target="_blank">@hermawan_sw</a>
-    </div>
+    <div class="footer">Dibuat oleh <a href="https://instagram.com/hermawan_sw" target="_blank">@hermawan_sw</a></div>
     
     <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
         let myChart = null;
         const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('csvFile');
+        const fileInput = document.getElementById('fileInput');
         const uploadLabel = document.getElementById('uploadLabel');
 
         dropZone.addEventListener('click', () => fileInput.click());
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            }, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-            }, false);
-        });
-
+        ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
+        
         dropZone.addEventListener('drop', (e) => {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            if (files.length > 0 && files[0].name.endsWith('.csv')) {
-                fileInput.files = files;
-                handleFile(files[0]);
-            } else {
-                alert('Mohon jatuhkan file dengan format .CSV ya!');
-            }
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) { fileInput.files = e.dataTransfer.files; handleFile(e.dataTransfer.files[0]); }
         });
-
-        fileInput.addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
 
         function handleFile(file) {
-            uploadLabel.innerText = "File Terbaca: " + file.name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                processData(text);
-            };
-            reader.readAsText(file);
+            uploadLabel.innerText = "Memproses: " + file.name;
+            const ext = file.name.split('.').pop().toLowerCase();
+            
+            if (ext === 'xlsx' || ext === 'xls') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet, {header: 1});
+                    let total = 0;
+                    rows.forEach(row => {
+                        if(row) {
+                            row.forEach(cell => {
+                                let num = parseFloat(String(cell).replace(/[^0-9.-]+/g, ""));
+                                if(!isNaN(num) && num > 1000) total += num; 
+                            });
+                        }
+                    });
+                    calculate(total);
+                };
+                reader.readAsArrayBuffer(file);
+            } else if (ext === 'pdf') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const typedarray = new Uint8Array(e.target.result);
+                    pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                        let maxPages = pdf.numPages;
+                        let countPromises = [];
+                        for (let j = 1; j <= maxPages; j++) {
+                            countPromises.push(pdf.getPage(j).then(page => page.getTextContent().then(text => text.items.map(s => s.str).join(' '))));
+                        }
+                        Promise.all(countPromises).then(texts => {
+                            let fullText = texts.join(' ');
+                            // Cari semua angka bernilai ribuan ke atas
+                            let matches = fullText.match(/\d[\d.,]*/g) || [];
+                            let total = 0;
+                            matches.forEach(m => {
+                                let num = parseFloat(m.replace(/[.,]/g, ''));
+                                if (!isNaN(num) && num >= 10000) total += num; 
+                            });
+                            calculate(total / 10); // Menyesuaikan pembacaan double koma desimal PDF jika ada
+                        });
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert('Format salah! Hanya menerima Excel atau PDF.');
+            }
         }
 
-        function processData(text) {
-            const rows = text.split('\n');
-            let totalRev = 0;
-            for(let i=0; i<rows.length; i++) {
-                if(rows[i].trim() !== '') {
-                    const value = parseFloat(rows[i].split(',')[0]);
-                    if(!isNaN(value)) totalRev += value;
-                }
-            }
-            
+        function calculate(totalRev) {
+            if(totalRev < 0) totalRev = 0;
             let step1 = totalRev - 18000000;
             let step2 = step1 > 0 ? step1 * 1.1 : 0;
             let incentive = step2 * 0.30;
             
-            document.getElementById('totalRevenue').innerText = 'Rp ' + totalRev.toLocaleString('id-ID');
-            document.getElementById('totalIncentive').innerText = 'Rp ' + incentive.toLocaleString('id-ID');
+            document.getElementById('totalRevenue').innerText = 'Rp ' + Math.round(totalRev).toLocaleString('id-ID');
+            document.getElementById('totalIncentive').innerText = 'Rp ' + Math.round(incentive).toLocaleString('id-ID');
             document.getElementById('results').style.display = 'grid';
-            
             updateChart(incentive);
         }
 
         function updateChart(currentIncentive) {
             const ctx = document.getElementById('historyChart').getContext('2d');
-            
-            if(myChart) {
-                myChart.destroy();
-            }
-
+            if(myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Bulan Lalu 1', 'Bulan Lalu 2', 'Bulan Ini (Hasil Upload)'],
-                    datasets: [{
-                        label: 'Insentif Anda (Rp)',
-                        data: [4500000, 5200000, currentIncentive],
-                        backgroundColor: ['#4e4eff', '#4e4eff', '#ff9f43'],
-                        borderRadius: 5
-                    }]
+                    labels: ['Bulan Lalu 1', 'Bulan Lalu 2', 'Bulan Ini'],
+                    datasets: [{ label: 'Insentif (Rp)', data: [4500000, 5200000, currentIncentive], backgroundColor: ['#4e4eff', '#4e4eff', '#ff9f43'], borderRadius: 5 }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { labels: { color: '#ffffff' } }
-                    },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#a5a5d4' } },
-                        y: { grid: { color: '#25254d' }, ticks: { color: '#a5a5d4' } }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { labels: { color: '#ffffff' } } }, scales: { x: { ticks: { color: '#a5a5d4' } }, y: { ticks: { color: '#a5a5d4' } } } }
             });
         }
     </script>
